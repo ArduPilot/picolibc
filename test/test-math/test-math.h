@@ -185,6 +185,9 @@ typedef struct {
 static inline ulp_t
 ulp32(binary32 ab, binary32 bb)
 {
+#ifdef ULP_BITWISE
+    return memcmp(&ab, &bb, sizeof(ab));
+#else
     volatile binary32 a = ab;
     volatile binary32 b = bb;
     if (a == b)
@@ -215,6 +218,7 @@ ulp32(binary32 ab, binary32 bb)
             break;
     }
     return ulp;
+#endif
 }
 
 static inline ulp_t
@@ -282,6 +286,9 @@ typedef struct {
 static inline ulp_t
 ulp64(binary64 ab, binary64 bb)
 {
+#ifdef ULP_BITWISE
+    return memcmp(&ab, &bb, sizeof(ab));
+#else
     volatile binary64 a = ab;
     volatile binary64 b = bb;
     if (a == b)
@@ -315,6 +322,7 @@ ulp64(binary64 ab, binary64 bb)
             break;
     }
     return ulp;
+#endif
 }
 
 static inline ulp_t
@@ -391,6 +399,9 @@ typedef struct {
 static inline ulp_t
 ulp80(binary80 ab, binary80 bb)
 {
+#ifdef ULP_BITWISE
+    return memcmp(&ab, &bb, sizeof(ab));
+#else
     volatile binary80 a = ab;
     volatile binary80 b = bb;
     if (a == b)
@@ -416,6 +427,7 @@ ulp80(binary80 ab, binary80 bb)
             break;
     }
     return ulp;
+#endif
 }
 
 static inline ulp_t
@@ -464,6 +476,9 @@ typedef struct {
 static inline ulp_t
 ulp128(binary128 ab, binary128 bb)
 {
+#ifdef ULP_BITWISE
+    return memcmp(&ab, &bb, sizeof(ab));
+#else
     volatile binary128 a = ab;
     volatile binary128 b = bb;
     if (a == b)
@@ -489,6 +504,7 @@ ulp128(binary128 ab, binary128 bb)
             break;
     }
     return ulp;
+#endif
 }
 
 static inline ulp_t
@@ -503,9 +519,11 @@ culp128(cbinary128 a, cbinary128 b)
 
 #endif
 
-#define sincos_sin 1
-#define sincos_cos 2
-#define remquo_quo 3
+#define sincos_sin           1
+#define sincos_cos           2
+#define remquo_quo           3
+#define setpayload_result    4
+#define setpayloadsig_result 5
 
 #if TEST_FUNC == sincos_sin
 #define TEST_FUNC_SINCOS_SIN
@@ -513,11 +531,17 @@ culp128(cbinary128 a, cbinary128 b)
 #define TEST_FUNC_SINCOS_COS
 #elif TEST_FUNC == remquo_quo
 #define TEST_FUNC_REMQUO_QUO
+#elif TEST_FUNC == setpayload_result
+#define TEST_FUNC_SETPAYLOAD_RESULT
+#elif TEST_FUNC == setpayloadsig_result
+#define TEST_FUNC_SETPAYLOADSIG_RESULT
 #endif
 
 #undef sincos_sin
 #undef sincos_cos
 #undef remquo_quo
+#undef setpayload_result
+#undef setpayloadsig_result
 
 #ifdef TEST_FUNC_SINCOS_SIN
 #ifdef TEST_FUNC_32
@@ -710,5 +734,107 @@ TEST_FUNC_128(binary128 x, binary128 y)
 #endif
 
 #endif /* TEST_FUNC_REMQUO_QUO */
+
+#ifdef TEST_FUNC_SETPAYLOAD_RESULT
+#ifdef TEST_FUNC_32
+binary32 TEST_FUNC_32(binary32 x);
+
+binary32
+TEST_FUNC_32(binary32 x)
+{
+    binary32 result;
+    FN32(setpayload)(&result, x);
+    return result;
+}
+#endif
+
+#ifdef HAS_BINARY64
+binary64 TEST_FUNC_64(binary64 x);
+
+binary64
+TEST_FUNC_64(binary64 x)
+{
+    binary64 result;
+    FN64(setpayload)(&result, x);
+    return result;
+}
+#endif
+
+#ifdef HAS_BINARY80
+binary80 TEST_FUNC_80(binary80 x);
+
+binary80
+TEST_FUNC_80(binary80 x)
+{
+    binary80 result;
+    FN80(setpayload)(&result, x);
+    return result;
+}
+#endif
+
+#ifdef HAS_BINARY128
+binary128 TEST_FUNC_128(binary128 x);
+
+binary128
+TEST_FUNC_128(binary128 x)
+{
+    binary128 result;
+    FN128(setpayload)(&result, x);
+    return result;
+}
+#endif
+
+#endif /* TEST_FUNC_SETPAYLOAD_RESULT */
+
+#ifdef TEST_FUNC_SETPAYLOADSIG_RESULT
+#ifdef TEST_FUNC_32
+binary32 TEST_FUNC_32(binary32 x);
+
+binary32
+TEST_FUNC_32(binary32 x)
+{
+    binary32 result;
+    FN32(setpayloadsig)(&result, x);
+    return result;
+}
+#endif
+
+#ifdef HAS_BINARY64
+binary64 TEST_FUNC_64(binary64 x);
+
+binary64
+TEST_FUNC_64(binary64 x)
+{
+    binary64 result;
+    FN64(setpayloadsig)(&result, x);
+    return result;
+}
+#endif
+
+#ifdef HAS_BINARY80
+binary80 TEST_FUNC_80(binary80 x);
+
+binary80
+TEST_FUNC_80(binary80 x)
+{
+    binary80 result;
+    FN80(setpayloadsig)(&result, x);
+    return result;
+}
+#endif
+
+#ifdef HAS_BINARY128
+binary128 TEST_FUNC_128(binary128 x);
+
+binary128
+TEST_FUNC_128(binary128 x)
+{
+    binary128 result;
+    FN128(setpayloadsig)(&result, x);
+    return result;
+}
+#endif
+
+#endif /* TEST_FUNC_SETPAYLOAD_RESULT */
 
 #endif /* _TEST_MATH_H_ */

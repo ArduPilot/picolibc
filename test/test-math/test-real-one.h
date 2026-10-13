@@ -213,7 +213,7 @@ test_binary128(void)
 int
 main(void)
 {
-    const char spaces[] = "               ";
+    const char spaces[] = "                         ";
 
     int        ret = 0;
     max_ulp = math_find_ulp_binary32();
@@ -234,7 +234,7 @@ main(void)
     ulp_t       max_ulp_128 = max_ulp;
 
     size_t      len = strlen(MATH_STRING(TEST_FUNC));
-    size_t      want_len = 10;
+    size_t      want_len = 20;
     size_t      extra = want_len - len;
     const char *space = spaces + strlen(spaces) - extra;
     assert(strlen(space) == extra);
